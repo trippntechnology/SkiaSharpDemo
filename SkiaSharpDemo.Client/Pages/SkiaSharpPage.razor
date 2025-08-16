@@ -1,10 +1,12 @@
 ﻿@page "/SkiaSharpPage"
 @rendermode @(new InteractiveWebAssemblyRenderMode(false))
 
-<h3>SkiaSharpPage</h3>
+@using SkiaSharp
+@using SkiaSharp.Views.Blazor
 
+<h3 @onmousemove="@OnMouseMove" style="border:1px solid red">SkiaSharpPage</h3>
+
+ <SKGLView OnPaintSurface="@OnPaintGLView" @onmousemove="@OnMouseMove" Width="400" Height="400" style="border:1px solid blue"/> 
 
 @code {
-
-
 }
