@@ -2,6 +2,7 @@
 using SkiaSharp;
 using SkiaSharp.Views.Blazor;
 using SkiaSharpDemo.Client.CanvasObject;
+using SkiaSharpDemo.Client.Shared;
 using System.Drawing;
 
 namespace SkiaSharpDemo.Client.Pages;
@@ -10,7 +11,10 @@ public partial class SkiaSharpPage
 {
   public int Width { get; set; } = 500;
   public int Height { get; set; } = 500;
+  public CursorStyle CursorStyle { get; set; } = CursorStyle.Pointer;
+
   public List<CanvasObject.CanvasObject> CanvasObjects = new List<CanvasObject.CanvasObject>();
+  public String Style => $"border:1px solid blue; cursor:{CursorStyle};";
 
   public SkiaSharpPage()
   {
@@ -44,5 +48,7 @@ public partial class SkiaSharpPage
   public void OnMouseMove(MouseEventArgs args)
   {
     Console.WriteLine($"OffsetX: {args.OffsetX}  OffsetY: {args.OffsetY}");
+    var objUnderMouse = CanvasObjects.FirstOrDefault(o => o.OnMouseOver(args));
+    CursorStyle = objUnderMouse != null ? CursorStyle.Pointer : CursorStyle.Default;
   }
 }
