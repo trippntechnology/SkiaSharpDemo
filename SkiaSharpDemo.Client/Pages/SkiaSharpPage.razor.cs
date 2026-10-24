@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.Web;
 using SkiaSharp;
 using SkiaSharp.Views.Blazor;
 using SkiaSharpDemo.Client.CanvasObject;
@@ -9,12 +9,16 @@ namespace SkiaSharpDemo.Client.Pages;
 
 public partial class SkiaSharpPage
 {
+  private SKGLView? _glView;
+  private CanvasObject.CanvasObject? _draggedObject;
+  private PointF _lastMousePosition;
+
   public int Width { get; set; } = 500;
   public int Height { get; set; } = 500;
-  public CursorStyle CursorStyle { get; set; } = CursorStyle.Pointer;
+  public CursorStyle CursorStyle { get; set; } = CursorStyle.Default;
 
   public List<CanvasObject.CanvasObject> CanvasObjects = new List<CanvasObject.CanvasObject>();
-  public String Style => $"border:1px solid blue; cursor:{CursorStyle};";
+  public string Style => $"border:1px solid blue; cursor:{CursorStyle.ToString().ToLower()};";
 
   public SkiaSharpPage()
   {
@@ -45,10 +49,61 @@ public partial class SkiaSharpPage
     }
   }
 
+  public void OnMouseDown(MouseEventArgs args)
+  {
+    // Pick the topmost object under the mouse cursor
+    _draggedObject = CanvasObjects.LastOrDefault(o => o.OnMouseOver(args));
+    if (_draggedObject != null)
+    {
+      _lastMousePosition = new PointF((float)args.OffsetX, (float)args.OffsetY);
+      CursorStyle = CursorStyle.Grabbing;
+    }
+  }
+
   public void OnMouseMove(MouseEventArgs args)
   {
-    Console.WriteLine($"OffsetX: {args.OffsetX}  OffsetY: {args.OffsetY}");
-    var objUnderMouse = CanvasObjects.FirstOrDefault(o => o.OnMouseOver(args));
-    CursorStyle = objUnderMouse != null ? CursorStyle.Pointer : CursorStyle.Default;
+    if (_draggedObject != null)
+    {
+      float currentX = (float)args.OffsetX;
+      float currentY = (float)args.OffsetY;
+
+      int deltaX = (int)(currentX - _lastMousePosition.X);
+      int deltaY = (int)(currentY - _lastMousePosition.Y);
+
+      if (deltaX != 0 || deltaY != 0)
+      {
+        _draggedObject.Move(deltaX, deltaY);
+        _lastMousePosition = new PointF(currentX, currentY);
+        _glView?.Invalidate();
+      }
+
+      CursorStyle = CursorStyle.Grabbing;
+    }
+    else
+    {
+      var objUnderMouse = CanvasObjects.LastOrDefault(o => o.OnMouseOver(args));
+      CursorStyle = objUnderMouse != null ? CursorStyle.Grab : CursorStyle.Default;
+    }
+  }
+
+  public void OnMouseUp(MouseEventArgs args)
+  {
+    if (_draggedObject != null)
+    {
+      _draggedObject = null;
+      var objUnderMouse = CanvasObjects.LastOrDefault(o => o.OnMouseOver(args));
+      CursorStyle = objUnderMouse != null ? CursorStyle.Grab : CursorStyle.Default;
+      _glView?.Invalidate();
+    }
+  }
+
+  public void OnMouseLeave(MouseEventArgs args)
+  {
+    if (_draggedObject != null)
+    {
+      _draggedObject = null;
+      CursorStyle = CursorStyle.Default;
+      _glView?.Invalidate();
+    }
   }
 }

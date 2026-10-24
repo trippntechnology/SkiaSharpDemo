@@ -1,12 +1,20 @@
-﻿@page "/SkiaSharpPage"
+@page "/SkiaSharpPage"
 @rendermode @(new InteractiveWebAssemblyRenderMode(false))
 
 @using SkiaSharp
 @using SkiaSharp.Views.Blazor
 
-<h3 @onmousemove="@OnMouseMove" style="border:1px solid red">SkiaSharpPage</h3>
+<h3 style="border:1px solid red">SkiaSharpPage</h3>
 
- <SKGLView OnPaintSurface="@OnPaintGLView" @onmousemove="@OnMouseMove" Width="@Width" Height="@Height" style="@Style"/> 
+<SKGLView @ref="_glView"
+          OnPaintSurface="@OnPaintGLView"
+          @onmousedown="@OnMouseDown"
+          @onmousemove="@OnMouseMove"
+          @onmouseup="@OnMouseUp"
+          @onmouseleave="@OnMouseLeave"
+          Width="@Width"
+          Height="@Height"
+          style="@Style" />
 
 @code {
 }

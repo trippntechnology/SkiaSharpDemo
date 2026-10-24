@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.Web;
 using SkiaSharp;
 
 namespace SkiaSharpDemo.Client.CanvasObject;
@@ -7,6 +7,7 @@ public abstract class CanvasObject
 {
   public abstract void OnPaint(SKCanvas canvas);
   public abstract SKPath GetPath();
+  public abstract void Move(int deltaX, int deltaY);
 
   public virtual bool OnMouseOver(MouseEventArgs args)
   {
@@ -14,7 +15,7 @@ public abstract class CanvasObject
     float mouseX = (float)args.OffsetX;
     float mouseY = (float)args.OffsetY;
 
-    // Get the path of the square
+    // Get the path of the shape
     using var path = GetPath();
 
     // Check if the mouse point is inside the path

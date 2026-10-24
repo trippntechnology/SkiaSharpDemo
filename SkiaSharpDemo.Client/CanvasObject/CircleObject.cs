@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.Web;
 using SkiaSharp;
 using System.Drawing;
 
@@ -6,14 +6,19 @@ namespace SkiaSharpDemo.Client.CanvasObject;
 
 public class CircleObject(Point midPoint, int radius) : CanvasObject
 {
-  private readonly Point midPoint = midPoint;
-  private readonly int radius = radius;
+  public Point MidPoint { get; set; } = midPoint;
+  public int Radius { get; set; } = radius;
 
   public override SKPath GetPath()
   {
-    var path = new SKPath();
-    path.AddCircle(midPoint.X, midPoint.Y, radius);
-    return path;
+    using var builder = new SKPathBuilder();
+    builder.AddCircle(MidPoint.X, MidPoint.Y, Radius);
+    return builder.Detach();
+  }
+
+  public override void Move(int deltaX, int deltaY)
+  {
+    MidPoint = new Point(MidPoint.X + deltaX, MidPoint.Y + deltaY);
   }
 
   public override void OnPaint(SKCanvas canvas)
